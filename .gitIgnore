@@ -1,1 +1,6 @@
-main.exe
+# Ignore all .exe files
+*.exe
+*.zip
+bootstrap
+
+
