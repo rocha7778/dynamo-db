@@ -31,7 +31,7 @@ func createNoteHandler(ctx context.Context, request events.APIGatewayProxyReques
 	case "DELETE":
 		return handlers.DeleteNote(ctx, request, tableName, dynamoDBClient)
 	case "PUT":
-		return handlers.DeleteNote(ctx, request, tableName, dynamoDBClient)
+		return handlers.UpdateNote(ctx, request, tableName, dynamoDBClient)
 	default:
 		return handlers.UnhandledMethod(ctx, request, tableName, dynamoDBClient)
 	}
