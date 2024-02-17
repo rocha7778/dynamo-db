@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/rocha7778/dynamo-db/handlers"
+	"github.com/rocha7778/dynamo-db/modelos"
 )
 
 const tableName = "UserNote"
@@ -24,12 +25,15 @@ func init() {
 
 func createNoteHandler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
+	isOk, statusCode, msg, claim := validateToken(ctx, request)
 	switch request.HTTPMethod {
 	case "GET":
 		return handlers.GetNote(ctx, request, tableName, dynamoDBClient)
 	case "POST":
 		return handlers.CreateNote(ctx, request, tableName, dynamoDBClient)
 	case "DELETE":
+		return handlers.DeleteNote(ctx, request, tableName, dynamoDBClient)
+	case "PUT":
 		return handlers.DeleteNote(ctx, request, tableName, dynamoDBClient)
 	default:
 		return handlers.UnhandledMethod(ctx, request, tableName, dynamoDBClient)
@@ -39,4 +43,20 @@ func createNoteHandler(ctx context.Context, request events.APIGatewayProxyReques
 
 func main() {
 	lambda.Start(createNoteHandler)
+}
+
+func validateToken(ctx context.Context, request events.APIGatewayProxyRequest) (bool, int, string, *modelos.Claim) {
+
+	path := ctx.Value(modelos.Key("path")).(string)
+
+	if path == "signup" || path == "login" {
+		return true, 200, "OK", &modelos.Claim{}
+	}
+
+	tocken := request.Headers["Authorization"]
+
+	if len(tocken) == 0 {
+		return false, 401, "Unauthorized", &modelos.Claim{}
+	}
+
 }
