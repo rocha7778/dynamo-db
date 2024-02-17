@@ -11,7 +11,8 @@ import (
 	"github.com/rocha7778/dynamo-db/modelos"
 )
 
-func GetUsers(ctx context.Context, tableName string, dynamoDBClient *dynamodb.DynamoDB) (events.APIGatewayProxyResponse, error) {
+func GetNotes(ctx context.Context, request events.APIGatewayProxyRequest, tableName string, dynamoDBClient *dynamodb.DynamoDB) (events.APIGatewayProxyResponse, error) {
+
 	// Scan the DynamoDB table to retrieve all users
 	result, err := dynamoDBClient.Scan(&dynamodb.ScanInput{
 		TableName: aws.String(tableName),

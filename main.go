@@ -25,7 +25,7 @@ func init() {
 
 func createNoteHandler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
-	isOk, statusCode, msg, claim := validateToken(ctx, request)
+	//isOk, statusCode, msg, claim := validateToken(ctx, request)
 	switch request.HTTPMethod {
 	case "GET":
 		return handlers.GetNote(ctx, request, tableName, dynamoDBClient)
@@ -59,4 +59,5 @@ func validateToken(ctx context.Context, request events.APIGatewayProxyRequest) (
 		return false, 401, "Unauthorized", &modelos.Claim{}
 	}
 
+	return true, 200, "OK", &modelos.Claim{}
 }

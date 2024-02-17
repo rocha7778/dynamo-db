@@ -14,7 +14,11 @@ func CreateNote(ctx context.Context, request events.APIGatewayProxyRequest, tabl
 }
 
 func GetNote(ctx context.Context, request events.APIGatewayProxyRequest, tableName string, dynamoDBClient *dynamodb.DynamoDB) (events.APIGatewayProxyResponse, error) {
-	return notes.GetNote(ctx, request, tableName, dynamoDBClient)
+	if request.Path == "/notes" {
+		return notes.GetNotes(ctx, request, tableName, dynamoDBClient)
+	} else {
+		return notes.GetNote(ctx, request, tableName, dynamoDBClient)
+	}
 }
 
 func DeleteNote(ctx context.Context, request events.APIGatewayProxyRequest, tableName string, dynamoDBClient *dynamodb.DynamoDB) (events.APIGatewayProxyResponse, error) {
