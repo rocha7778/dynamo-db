@@ -1,24 +1,22 @@
 package notes
 
 import (
-	"context"
-
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/rocha7778/dynamo-db/db"
+	"github.com/rocha7778/dynamo-db/variables"
 )
 
-func DeleteNote(ctx context.Context, request events.APIGatewayProxyRequest, tableName string, dynamoDBClient *dynamodb.DynamoDB) (events.APIGatewayProxyResponse, error) {
-	// Extract note ID from request path parameters
-	noteID := request.PathParameters["id"]
+func DeleteNote(noteID string) (events.APIGatewayProxyResponse, error) {
 
 	if noteID == "" {
 		return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Note ID is required in path parameters"}, nil
 	}
 
 	// Delete the item from DynamoDB
-	_, err := dynamoDBClient.DeleteItem(&dynamodb.DeleteItemInput{
-		TableName: aws.String(tableName),
+	_, err := db.DBClient().DeleteItem(&dynamodb.DeleteItemInput{
+		TableName: aws.String(variables.TableName),
 		Key: map[string]*dynamodb.AttributeValue{
 			"id": {S: aws.String(noteID)},
 		},

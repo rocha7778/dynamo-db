@@ -1,23 +1,24 @@
 package notes
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/rocha7778/dynamo-db/db"
 	"github.com/rocha7778/dynamo-db/modelos"
+	"github.com/rocha7778/dynamo-db/variables"
 )
 
-func CreateNote(ctx context.Context, request events.APIGatewayProxyRequest, tableName string, dynamoDBClient *dynamodb.DynamoDB) (events.APIGatewayProxyResponse, error) {
+func CreateNote(body string) (events.APIGatewayProxyResponse, error) {
 
 	var note modelos.UserNote
-	err := json.Unmarshal([]byte(request.Body), &note)
+	err := json.Unmarshal([]byte(body), &note)
 
 	if err != nil {
-		errMsg := fmt.Sprintf("THE BODY %s, Error unmarshaling request body: %s", request.Body, err.Error())
+		errMsg := fmt.Sprintf("THE BODY %s, Error unmarshaling request body: %s", body, err.Error())
 		return events.APIGatewayProxyResponse{StatusCode: 400, Body: errMsg}, nil
 	}
 
@@ -32,8 +33,8 @@ func CreateNote(ctx context.Context, request events.APIGatewayProxyRequest, tabl
 	}
 
 	// Put the item into DynamoDB
-	_, err = dynamoDBClient.PutItem(&dynamodb.PutItemInput{
-		TableName: aws.String(tableName),
+	_, err = db.DBClient().PutItem(&dynamodb.PutItemInput{
+		TableName: aws.String(variables.TableName),
 		Item: map[string]*dynamodb.AttributeValue{
 			"id":   {S: aws.String(note.ID)},
 			"text": {S: aws.String(note.Text)},

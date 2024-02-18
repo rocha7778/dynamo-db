@@ -1,21 +1,22 @@
 package notes
 
 import (
-	"context"
 	"encoding/json"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"github.com/rocha7778/dynamo-db/db"
 	"github.com/rocha7778/dynamo-db/modelos"
+	"github.com/rocha7778/dynamo-db/variables"
 )
 
-func GetNotes(ctx context.Context, request events.APIGatewayProxyRequest, tableName string, dynamoDBClient *dynamodb.DynamoDB) (events.APIGatewayProxyResponse, error) {
+func GetNotes() (events.APIGatewayProxyResponse, error) {
 
 	// Scan the DynamoDB table to retrieve all users
-	result, err := dynamoDBClient.Scan(&dynamodb.ScanInput{
-		TableName: aws.String(tableName),
+	result, err := db.DBClient().Scan(&dynamodb.ScanInput{
+		TableName: aws.String(variables.TableName),
 	})
 
 	// Check for errors

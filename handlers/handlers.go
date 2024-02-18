@@ -1,33 +1,37 @@
 package handlers
 
 import (
-	"context"
-
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/rocha7778/dynamo-db/notes"
 	// luisamaria.ariastorres@emeal.nttdata.com
 )
 
-func CreateNote(ctx context.Context, request events.APIGatewayProxyRequest, tableName string, dynamoDBClient *dynamodb.DynamoDB) (events.APIGatewayProxyResponse, error) {
-	return notes.CreateNote(ctx, request, tableName, dynamoDBClient)
+func CreateNote(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	body := request.Body
+	return notes.CreateNote(body)
 }
 
-func GetNote(ctx context.Context, request events.APIGatewayProxyRequest, tableName string, dynamoDBClient *dynamodb.DynamoDB) (events.APIGatewayProxyResponse, error) {
+func GetNote(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+
+	noteID := request.PathParameters["id"]
+
 	if request.Path == "/notes" {
-		return notes.GetNotes(ctx, request, tableName, dynamoDBClient)
+		return notes.GetNotes()
 	} else {
-		return notes.GetNote(ctx, request, tableName, dynamoDBClient)
+		return notes.GetNoteById(noteID)
 	}
 }
 
-func DeleteNote(ctx context.Context, request events.APIGatewayProxyRequest, tableName string, dynamoDBClient *dynamodb.DynamoDB) (events.APIGatewayProxyResponse, error) {
-	return notes.DeleteNote(ctx, request, tableName, dynamoDBClient)
+func DeleteNote(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	noteID := request.PathParameters["id"]
+	return notes.DeleteNote(noteID)
 }
-func UpdateNote(ctx context.Context, request events.APIGatewayProxyRequest, tableName string, dynamoDBClient *dynamodb.DynamoDB) (events.APIGatewayProxyResponse, error) {
-	return notes.UpdateNote(ctx, request, tableName, dynamoDBClient)
+func UpdateNote(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	noteID := request.PathParameters["id"]
+	body := request.Body
+	return notes.UpdateNote(noteID, body)
 }
 
-func UnhandledMethod(ctx context.Context, request events.APIGatewayProxyRequest, tableName string, dynamoDBClient *dynamodb.DynamoDB) (events.APIGatewayProxyResponse, error) {
+func UnhandledMethod() (events.APIGatewayProxyResponse, error) {
 	return events.APIGatewayProxyResponse{StatusCode: 405, Body: "Unsupported method"}, nil
 }

@@ -1,6 +1,7 @@
 package modelos
 
 import (
+	"errors"
 	"time"
 )
 
@@ -11,4 +12,11 @@ type User struct {
 	Birthday time.Time `json:"birthday"`
 	Email    string    `json:"email"`
 	Password string    `json:"password"`
+}
+
+func (u *User) ValidEmail() error {
+	if u.Email == "" {
+		return errors.New("email is required")
+	}
+	return nil
 }

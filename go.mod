@@ -8,4 +8,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.2.0
 )
 
-require github.com/jmespath/go-jmespath v0.4.0 // indirect
+require (
+	github.com/golang/mock v1.6.0 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
+)

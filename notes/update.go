@@ -1,34 +1,34 @@
 package notes
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/rocha7778/dynamo-db/db"
 	"github.com/rocha7778/dynamo-db/modelos"
+	"github.com/rocha7778/dynamo-db/variables"
 )
 
-func UpdateNote(ctx context.Context, request events.APIGatewayProxyRequest, tableName string, dynamoDBClient *dynamodb.DynamoDB) (events.APIGatewayProxyResponse, error) {
+func UpdateNote(noteID string, body string) (events.APIGatewayProxyResponse, error) {
 	// Extract note ID from request path parameters
-	noteID := request.PathParameters["id"]
 	if noteID == "" {
 		return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Note ID is required in path parameters"}, nil
 	}
 
 	// Parse request body into UserNote struct
 	var updatedNote modelos.UserNote
-	err := json.Unmarshal([]byte(request.Body), &updatedNote)
+	err := json.Unmarshal([]byte(body), &updatedNote)
 	if err != nil {
 		errMsg := fmt.Sprintf("Error unmarshaling request body: %s", err.Error())
 		return events.APIGatewayProxyResponse{StatusCode: 400, Body: errMsg}, nil
 	}
 
 	// Update the item in DynamoDB
-	_, err = dynamoDBClient.UpdateItem(&dynamodb.UpdateItemInput{
-		TableName: aws.String(tableName),
+	_, err = db.DBClient().UpdateItem(&dynamodb.UpdateItemInput{
+		TableName: aws.String(variables.TableName),
 		Key: map[string]*dynamodb.AttributeValue{
 			"id": {S: aws.String(noteID)},
 		},

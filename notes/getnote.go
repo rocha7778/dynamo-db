@@ -1,19 +1,18 @@
 package notes
 
 import (
-	"context"
 	"encoding/json"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"github.com/rocha7778/dynamo-db/db"
 	"github.com/rocha7778/dynamo-db/modelos"
+	"github.com/rocha7778/dynamo-db/variables"
 )
 
-func GetNote(ctx context.Context, request events.APIGatewayProxyRequest, tableName string, dynamoDBClient *dynamodb.DynamoDB) (events.APIGatewayProxyResponse, error) {
-
-	noteID := request.PathParameters["id"]
+func GetNoteById(noteID string) (events.APIGatewayProxyResponse, error) {
 
 	// Check if the note ID is empty
 	if noteID == "" {
@@ -21,8 +20,8 @@ func GetNote(ctx context.Context, request events.APIGatewayProxyRequest, tableNa
 	}
 
 	// Get the item from DynamoDB
-	result, err := dynamoDBClient.GetItem(&dynamodb.GetItemInput{
-		TableName: aws.String(tableName),
+	result, err := db.DBClient().GetItem(&dynamodb.GetItemInput{
+		TableName: aws.String(variables.TableName),
 		Key: map[string]*dynamodb.AttributeValue{
 			"id": {S: aws.String(noteID)},
 		},
