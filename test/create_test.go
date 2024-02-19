@@ -15,12 +15,11 @@ type mockCreateNoteRepository struct {
 	mock.Mock
 }
 
-func (m mockCreateNoteRepository) PutItem(note *modelos.UserNote) error {
-	// Mock implementation, you can customize as needed for your test cases
+func (m *mockCreateNoteRepository) PutItem(note *modelos.UserNote) error {
 	return nil
 }
 
-func TestCreateNote_Success(t *testing.T) {
+func TestCreateNoteSuccess(t *testing.T) {
 	// Arrange
 	mockRepository := mockCreateNoteRepository{}
 	mockRepository.On("PutItem").Return(nil)
@@ -35,9 +34,41 @@ func TestCreateNote_Success(t *testing.T) {
 	requestBody := string(body)
 
 	// Act
-	response, err := service.CreateNote(requestBody, mockRepository)
+	response, err := service.CreateNote(requestBody, &mockRepository)
 
 	// Assert
 	assert.NoError(t, err)
 	assert.Equal(t, events.APIGatewayProxyResponse{StatusCode: 200, Body: string(body)}, response)
+}
+
+func TestCreateNoteInvalidRequestBody(t *testing.T) {
+	// Creating DefaultNoteService instance
+	service := notes_impl.DefaultNoteService{}
+
+	note := &modelos.UserNote{
+		ID:   "",
+		Text: "",
+	}
+	body, _ := json.Marshal(note)
+	requestBody := string(body)
+
+	// Calling the CreateNote function with invalid request body
+	response, err := service.CreateNote(requestBody, nil)
+
+	// Asserting the response
+	assert.NotNil(t, err)
+	assert.Equal(t, 400, response.StatusCode)
+	assert.Contains(t, response.Body, "ID and Text fields are required")
+}
+
+func TestCreateNoteEmptyBody(t *testing.T) {
+	// Creating DefaultNoteService instance
+	service := notes_impl.DefaultNoteService{}
+
+	// Calling the CreateNote function with invalid request body
+	response, err := service.CreateNote("", nil)
+
+	// Asserting the response
+	assert.NotNil(t, err)
+	assert.Equal(t, 400, response.StatusCode)
 }

@@ -2,6 +2,7 @@ package notes_impl
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -22,24 +23,24 @@ func (s DefaultNoteService) CreateNote(body string, createNoteService db.CreateN
 
 	if err != nil {
 		errMsg := fmt.Sprintf("THE BODY %s, Error unmarshaling request body: %s", body, err.Error())
-		return events.APIGatewayProxyResponse{StatusCode: 400, Body: errMsg}, nil
+		return events.APIGatewayProxyResponse{StatusCode: 400, Body: errMsg}, err
 	}
 
 	if note.ID == "" || note.Text == "" {
-		return events.APIGatewayProxyResponse{StatusCode: 400, Body: "ID and Text fields are required"}, nil
+		return events.APIGatewayProxyResponse{StatusCode: 400, Body: "ID and Text fields are required"}, errors.New("ID and Text fields are required")
 	}
 
 	// Marshal the note struct into JSON
 	noteJSON, err := json.Marshal(note)
 	if err != nil {
-		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error marshaling JSON"}, nil
+		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error marshaling JSON"}, err
 	}
 
 	// Put the item into DynamoDB
 	err = createNoteService.PutItem(&note)
 
 	if err != nil {
-		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error saving note to DynamoDB"}, nil
+		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error saving note to DynamoDB"}, err
 	}
 
 	return events.APIGatewayProxyResponse{StatusCode: 200, Body: string(noteJSON)}, nil
