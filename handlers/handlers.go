@@ -3,7 +3,6 @@ package handlers
 import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/rocha7778/dynamo-db/notes"
-	// luisamaria.ariastorres@emeal.nttdata.com
 )
 
 func CreateNote(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
