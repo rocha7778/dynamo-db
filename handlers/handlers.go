@@ -31,12 +31,12 @@ func NewNoteHandler() *NoteHandler {
 	}
 }
 
-func (h *NoteHandler) CreateNote(request events.APIGatewayProxyRequest) events.APIGatewayProxyResponse {
+func (h *NoteHandler) CreateNote(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	body := request.Body
-	return h.CreateNoteService.CreateNote(body)
+	return h.CreateNoteService.CreateNote(body), nil
 }
 
-func (h *NoteHandler) GetNote(request events.APIGatewayProxyRequest) events.APIGatewayProxyResponse {
+func (h *NoteHandler) GetNote(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	noteID := request.PathParameters["id"]
 	if request.Path == "/notes" {
 		return getNotes(h)
@@ -45,24 +45,24 @@ func (h *NoteHandler) GetNote(request events.APIGatewayProxyRequest) events.APIG
 
 }
 
-func getNotes(h *NoteHandler) events.APIGatewayProxyResponse {
-	return h.GetNotesService.GetNotes()
+func getNotes(h *NoteHandler) (events.APIGatewayProxyResponse, error) {
+	return h.GetNotesService.GetNotes(), nil
 }
 
-func getNoteById(h *NoteHandler, noteID string) events.APIGatewayProxyResponse {
-	return h.GetNoteByIdService.GetNoteById(noteID)
+func getNoteById(h *NoteHandler, noteID string) (events.APIGatewayProxyResponse, error) {
+	return h.GetNoteByIdService.GetNoteById(noteID), nil
 }
 
-func (h *NoteHandler) DeleteNote(request events.APIGatewayProxyRequest) events.APIGatewayProxyResponse {
+func (h *NoteHandler) DeleteNote(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	noteID := request.PathParameters["id"]
-	return h.DeleteNoteService.DeleteNote(noteID)
+	return h.DeleteNoteService.DeleteNote(noteID), nil
 }
-func (h *NoteHandler) UpdateNote(request events.APIGatewayProxyRequest) events.APIGatewayProxyResponse {
+func (h *NoteHandler) UpdateNote(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	noteID := request.PathParameters["id"]
 	body := request.Body
-	return h.UpdateNoteService.UpdateNote(noteID, body)
+	return h.UpdateNoteService.UpdateNote(noteID, body), nil
 }
 
-func (h *NoteHandler) UnhandledMethod() events.APIGatewayProxyResponse {
-	return events.APIGatewayProxyResponse{StatusCode: 405, Body: "Unsupported method"}
+func (h *NoteHandler) UnhandledMethod() (events.APIGatewayProxyResponse, error) {
+	return events.APIGatewayProxyResponse{StatusCode: 405, Body: "Unsupported method"}, nil
 }
