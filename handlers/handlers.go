@@ -5,34 +5,34 @@ import (
 	"github.com/rocha7778/dynamo-db/notes_impl"
 )
 
-// Considerando la posibilidad de utilizar instancias singleton o inyección de dependencias para reutilizar instancias de servicios
 var (
-	createNoteService   = &notes_impl.CreateNoteRepository{}
-	getNotesServiceRepo = &notes_impl.GetNotesServiceRepository{}
-	getNoteServiceRepo  = &notes_impl.GetNoteServiceRepository{}
-	deleteServiceRepo   = &notes_impl.DeleteServiceRepository{}
-	updateServiceRepo   = &notes_impl.UpdateNoteServiceRepository{}
+	createNoteServiceRepo = &notes_impl.CreateNoteRepository{}
+	getNotesServiceRepo   = &notes_impl.GetNotesServiceRepository{}
+	getNoteServiceRepo    = &notes_impl.GetNoteServiceRepository{}
+	deleteServiceRepo     = &notes_impl.DeleteServiceRepository{}
+	updateServiceRepo     = &notes_impl.UpdateNoteServiceRepository{}
 )
 
 var (
-	noteService       = notes_impl.DefaultNoteService{}
-	getNoteService    = notes_impl.DefaultGetNotesCreateService{Repo: getNotesServiceRepo}
-	deleteNoteService = notes_impl.DefaultNoteDeleteService{Repo: deleteServiceRepo}
-	updateNoteService = notes_impl.NoteService{Repo: updateServiceRepo}
+	noteService        = notes_impl.CreateNoteService{Repo: createNoteServiceRepo}
+	getNoteService     = notes_impl.GetNotesCreateService{Repo: getNotesServiceRepo}
+	deleteNoteService  = notes_impl.DeleteNoteService{Repo: deleteServiceRepo}
+	updateNoteService  = notes_impl.UpdateNoteService{Repo: updateServiceRepo}
+	getNoteByIdService = notes_impl.GetNoteServiceById{Repo: getNoteServiceRepo}
 )
 
 func CreateNote(request events.APIGatewayProxyRequest) events.APIGatewayProxyResponse {
 	body := request.Body
-	return noteService.CreateNote(body, createNoteService)
+	return noteService.CreateNote(body)
 }
 
 func GetNote(request events.APIGatewayProxyRequest) events.APIGatewayProxyResponse {
 	noteID := request.PathParameters["id"]
 	if request.Path == "/notes" {
 		return getNotes()
-	} else {
-		return getNoteById(noteID)
 	}
+	return getNoteById(noteID)
+
 }
 
 func getNotes() events.APIGatewayProxyResponse {
@@ -40,8 +40,7 @@ func getNotes() events.APIGatewayProxyResponse {
 }
 
 func getNoteById(noteID string) events.APIGatewayProxyResponse {
-	service := notes_impl.DefaultNoteGetService{Repo: getNoteServiceRepo}
-	return service.GetNoteById(noteID)
+	return getNoteByIdService.GetNoteById(noteID)
 }
 
 func DeleteNote(request events.APIGatewayProxyRequest) events.APIGatewayProxyResponse {

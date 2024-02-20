@@ -14,13 +14,13 @@ import (
 	"github.com/rocha7778/dynamo-db/variables"
 )
 
-type UpdateNoteServiceRepository struct{}
-
-type NoteService struct {
+type UpdateNoteService struct {
 	Repo db.UpdateNoteRepository
 }
 
-func (NoteService *NoteService) UpdateNote(noteID string, body string) events.APIGatewayProxyResponse {
+type UpdateNoteServiceRepository struct{}
+
+func (NoteService *UpdateNoteService) UpdateNote(noteID string, body string) events.APIGatewayProxyResponse {
 	// Extract note ID from request path parameters
 	if noteID == "" || !validations.IsValidNoteID(noteID) {
 		return handleError("Note ID is required in path parameters", http.StatusBadRequest)

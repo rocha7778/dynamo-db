@@ -22,10 +22,10 @@ func (m *MockRepo) DeleteItem(noteId string) error {
 // Caso de prueba positivo para DeleteNote
 func TestDeleteNoteSuccess(t *testing.T) {
 	mockRepo := new(MockRepo)
-	noteID := "test-note-id"
+	noteID := "12346"
 	mockRepo.On("DeleteItem", noteID).Return(nil)
 
-	service := notes_impl.DefaultNoteDeleteService{
+	service := notes_impl.DeleteNoteService{
 		Repo: mockRepo,
 	}
 
@@ -38,7 +38,7 @@ func TestDeleteNoteSuccess(t *testing.T) {
 
 // Caso de prueba negativo para DeleteNote - NoteID vacío
 func TestDeleteNoteEmptyNoteID(t *testing.T) {
-	service := notes_impl.DefaultNoteDeleteService{}
+	service := notes_impl.DeleteNoteService{}
 
 	resp := service.DeleteNote("")
 
@@ -49,10 +49,10 @@ func TestDeleteNoteEmptyNoteID(t *testing.T) {
 // Caso de prueba negativo para DeleteNote - Error al eliminar nota
 func TestDeleteNoteDeleteItemError(t *testing.T) {
 	mockRepo := new(MockRepo)
-	noteID := "test-note-id"
+	noteID := "123456"
 	mockRepo.On("DeleteItem", noteID).Return(errors.New("internal error"))
 
-	service := notes_impl.DefaultNoteDeleteService{
+	service := notes_impl.DeleteNoteService{
 		Repo: mockRepo,
 	}
 

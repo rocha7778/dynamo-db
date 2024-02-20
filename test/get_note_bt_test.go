@@ -25,7 +25,7 @@ func (m *MockGetNoteRepository) GetItem(noteID string) (*dynamodb.GetItemOutput,
 func TestGetNoteById(t *testing.T) {
 	// Crear instancias del mock y del servicio
 	mockRepo := new(MockGetNoteRepository)
-	service := notes_impl.DefaultNoteGetService{Repo: mockRepo}
+	service := notes_impl.GetNoteServiceById{Repo: mockRepo}
 
 	note := modelos.UserNote{
 		ID:   "123",
@@ -52,7 +52,7 @@ func TestGetNoteById(t *testing.T) {
 func TestGetNoteByIdWithError(t *testing.T) {
 	// Configurando el mock para devolver un error
 	mockRepo := new(MockGetNoteRepository)
-	service := notes_impl.DefaultNoteGetService{Repo: mockRepo}
+	service := notes_impl.GetNoteServiceById{Repo: mockRepo}
 	mockRepo.On("GetItem", "someNoteID").Return((*dynamodb.GetItemOutput)(nil), errors.New("error"))
 
 	// Llamando a la función bajo prueba

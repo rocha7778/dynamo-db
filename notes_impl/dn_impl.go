@@ -11,13 +11,14 @@ import (
 	"github.com/rocha7778/dynamo-db/variables"
 )
 
-type DefaultNoteDeleteService struct {
-	Repo db.DeleteServiceRepositoryInterface
+type DeleteNoteService struct {
+	Repo db.DeleteServiceRepository
 }
-type DeleteServiceRepository struct{}
+type DeleteServiceRepository struct {
+}
 
 // DeleteNote deletes a note
-func (NoteService *DefaultNoteDeleteService) DeleteNote(noteID string) events.APIGatewayProxyResponse {
+func (NoteService *DeleteNoteService) DeleteNote(noteID string) events.APIGatewayProxyResponse {
 	if noteID == "" || !validations.IsValidNoteID(noteID) {
 		return handleError("Note ID is required in path parameters", http.StatusBadRequest)
 	}

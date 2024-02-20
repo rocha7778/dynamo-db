@@ -9,7 +9,7 @@ type CreateNoteRepository interface {
 	PutItem(note *modelos.UserNote) error
 }
 
-type DeleteServiceRepositoryInterface interface {
+type DeleteServiceRepository interface {
 	DeleteItem(NoteId string) error
 }
 

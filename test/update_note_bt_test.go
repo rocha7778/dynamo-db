@@ -23,7 +23,7 @@ func (m *MockUpdateNoteRepo) UpdateItem(note *modelos.UserNote) error {
 // Test positivo
 func TestUpdateNoteSuccess(t *testing.T) {
 	mockRepo := new(MockUpdateNoteRepo)
-	noteService := notes_impl.NoteService{Repo: mockRepo}
+	noteService := notes_impl.UpdateNoteService{Repo: mockRepo}
 	expectedNote := modelos.UserNote{ID: "123", Text: "Nota actualizada"}
 
 	mockRepo.On("UpdateItem", &expectedNote).Return(nil)
@@ -37,7 +37,7 @@ func TestUpdateNoteSuccess(t *testing.T) {
 // Test negativo
 func TestUpdateNoteFailureIDMissing(t *testing.T) {
 	mockRepo := new(MockUpdateNoteRepo)
-	noteService := notes_impl.NoteService{Repo: mockRepo}
+	noteService := notes_impl.UpdateNoteService{Repo: mockRepo}
 
 	response := noteService.UpdateNote("", `{ "id": "123", "text":"Nota actualizada"}`)
 	assert.Equal(t, 400, response.StatusCode)
@@ -48,7 +48,7 @@ func TestUpdateNoteFailureIDMissing(t *testing.T) {
 
 func TestUpdateNoteFailureUnMarsharl(t *testing.T) {
 	mockRepo := new(MockUpdateNoteRepo)
-	noteService := notes_impl.NoteService{Repo: mockRepo}
+	noteService := notes_impl.UpdateNoteService{Repo: mockRepo}
 
 	response := noteService.UpdateNote("123", `{ "id": "123", "text":"Nota actualizada"`)
 	assert.Equal(t, 400, response.StatusCode)
@@ -59,7 +59,7 @@ func TestUpdateNoteFailureUnMarsharl(t *testing.T) {
 
 func TestUpdateNoteFailureDynamoDBOperation(t *testing.T) {
 	mockRepo := new(MockUpdateNoteRepo)
-	noteService := notes_impl.NoteService{Repo: mockRepo}
+	noteService := notes_impl.UpdateNoteService{Repo: mockRepo}
 	expectedNote := modelos.UserNote{ID: "123", Text: "Nota actualizada"}
 	mockRepo.On("UpdateItem", &expectedNote).Return(errors.New("error updating note in DynamoDB"))
 

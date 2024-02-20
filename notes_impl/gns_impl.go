@@ -13,13 +13,13 @@ import (
 	"github.com/rocha7778/dynamo-db/variables"
 )
 
-type DefaultGetNotesCreateService struct {
+type GetNotesCreateService struct {
 	Repo db.GetNotesRepository
 }
 
 type GetNotesServiceRepository struct{}
 
-func (NoteService DefaultGetNotesCreateService) GetNotes() events.APIGatewayProxyResponse {
+func (NoteService GetNotesCreateService) GetNotes() events.APIGatewayProxyResponse {
 
 	// Get the item from DynamoDB
 	result, err := NoteService.Repo.Scam()

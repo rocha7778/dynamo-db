@@ -16,33 +16,42 @@ type mockCreateNoteRepository struct {
 }
 
 func (m *mockCreateNoteRepository) PutItem(note *modelos.UserNote) error {
-	return nil
+	args := m.Called(note)
+	return args.Error(0)
+}
+
+func setupService() (*notes_impl.CreateNoteService, *MockCreateNoteService) {
+	mockRepo := new(MockCreateNoteService)
+	service := &notes_impl.CreateNoteService{
+		Repo: mockRepo, // Inyectar el mock aquí
+	}
+	return service, mockRepo
 }
 
 func TestCreateNoteSuccess(t *testing.T) {
 	// Arrange
-	mockRepository := mockCreateNoteRepository{}
-	mockRepository.On("PutItem").Return(nil)
-
-	service := notes_impl.DefaultNoteService{}
+	service, mockRepository := setupService()
 
 	note := &modelos.UserNote{
-		ID:   "test-id",
+		ID:   "123",
 		Text: "test-text",
 	}
+
 	body, _ := json.Marshal(note)
 	requestBody := string(body)
 
+	mockRepository.On("PutItem", note).Return(nil)
+
 	// Act
-	response := service.CreateNote(requestBody, &mockRepository)
+	response := service.CreateNote(requestBody)
 
 	// Assert
 	assert.Equal(t, events.APIGatewayProxyResponse{StatusCode: 200, Body: string(body)}, response)
 }
 
 func TestCreateNoteInvalidRequestBody(t *testing.T) {
-	// Creating DefaultNoteService instance
-	service := notes_impl.DefaultNoteService{}
+	// Creating CreateNoteService instance
+	service, _ := setupService()
 
 	note := &modelos.UserNote{
 		ID:   "",
@@ -52,7 +61,7 @@ func TestCreateNoteInvalidRequestBody(t *testing.T) {
 	requestBody := string(body)
 
 	// Calling the CreateNote function with invalid request body
-	response := service.CreateNote(requestBody, nil)
+	response := service.CreateNote(requestBody)
 
 	// Asserting the response
 	assert.Equal(t, 400, response.StatusCode)
@@ -60,11 +69,11 @@ func TestCreateNoteInvalidRequestBody(t *testing.T) {
 }
 
 func TestCreateNoteEmptyBody(t *testing.T) {
-	// Creating DefaultNoteService instance
-	service := notes_impl.DefaultNoteService{}
+	// Creating CreateNoteService instance
+	service, _ := setupService()
 
 	// Calling the CreateNote function with invalid request body
-	response := service.CreateNote("", nil)
+	response := service.CreateNote("")
 
 	// Asserting the response
 	assert.Equal(t, 400, response.StatusCode)

@@ -36,7 +36,7 @@ var mockNotes = []modelos.UserNote{
 // Test positivo para GetNotes
 func TestGetNotesSuccess(t *testing.T) {
 	mockRepo := new(MockGetNotesRepo)
-	service := notes_impl.DefaultGetNotesCreateService{Repo: mockRepo}
+	service := notes_impl.GetNotesCreateService{Repo: mockRepo}
 	items := []map[string]*dynamodb.AttributeValue{}
 
 	for _, note := range mockNotes {
@@ -54,7 +54,7 @@ func TestGetNotesSuccess(t *testing.T) {
 // Test negativo para GetNotes - Error al escanear DynamoDB
 func TestGetNotesScanError(t *testing.T) {
 	mockRepo := new(MockGetNotesRepo)
-	service := notes_impl.DefaultGetNotesCreateService{Repo: mockRepo}
+	service := notes_impl.GetNotesCreateService{Repo: mockRepo}
 	mockRepo.On("Scam").Return((*dynamodb.ScanOutput)(nil), errors.New("Error scanning DynamoDB"))
 	resp := service.GetNotes()
 	assert.Equal(t, 500, resp.StatusCode)
@@ -65,7 +65,7 @@ func TestGetNotesScanError(t *testing.T) {
 // Test negativo para GetNotes - No se encontraron usuarios
 func TestGetNotesNoUsersFound(t *testing.T) {
 	mockRepo := new(MockGetNotesRepo)
-	service := notes_impl.DefaultGetNotesCreateService{Repo: mockRepo}
+	service := notes_impl.GetNotesCreateService{Repo: mockRepo}
 	mockScanOutput := &dynamodb.ScanOutput{Items: []map[string]*dynamodb.AttributeValue{}}
 	mockRepo.On("Scam").Return(mockScanOutput, nil)
 	resp := service.GetNotes()

@@ -22,14 +22,14 @@ func (m *mockCreateNoteRepositoryFaild) PutItem(note *modelos.UserNote) error {
 
 func TestCreateNoteErrorSavingToDynamoDB(t *testing.T) {
 	mockRepository := &mockCreateNoteRepositoryFaild{}
-	service := notes_impl.DefaultNoteService{}
+	service := notes_impl.CreateNoteService{Repo: mockRepository}
 	note := modelos.UserNote{
 		ID:   "123",
 		Text: "Sample note",
 	}
 	noteJSON, _ := json.Marshal(note)
 	mockRepository.On("PutItem", &note).Return(errors.New("error saving to DynamoDB"))
-	response := service.CreateNote(string(noteJSON), mockRepository)
+	response := service.CreateNote(string(noteJSON))
 	assert.Equal(t, 500, response.StatusCode)
 	assert.Contains(t, response.Body, "Error saving note to DynamoDB")
 	mockRepository.AssertCalled(t, "PutItem", &note)

@@ -14,18 +14,18 @@ import (
 	"github.com/rocha7778/dynamo-db/variables"
 )
 
-type DefaultNoteGetService struct {
+type GetNoteServiceById struct {
 	Repo db.GetNoteRepository
 }
 
 type GetNoteServiceRepository struct{}
 
-func (NoteService DefaultNoteGetService) GetNoteById(noteID string) events.APIGatewayProxyResponse {
+func (NoteService GetNoteServiceById) GetNoteById(noteID string) events.APIGatewayProxyResponse {
 
 	// Check if the note ID is empty
 
 	if noteID == "" || !validations.IsValidNoteID(noteID) {
-		return handleError("Error getting note from DynamoDB", http.StatusNotFound)
+		return handleError("Note Id is mandatory and needs to take a valid value", http.StatusNotFound)
 	}
 
 	// Get the item from DynamoDB
