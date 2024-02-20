@@ -34,10 +34,9 @@ func TestCreateNoteSuccess(t *testing.T) {
 	requestBody := string(body)
 
 	// Act
-	response, err := service.CreateNote(requestBody, &mockRepository)
+	response := service.CreateNote(requestBody, &mockRepository)
 
 	// Assert
-	assert.NoError(t, err)
 	assert.Equal(t, events.APIGatewayProxyResponse{StatusCode: 200, Body: string(body)}, response)
 }
 
@@ -53,10 +52,9 @@ func TestCreateNoteInvalidRequestBody(t *testing.T) {
 	requestBody := string(body)
 
 	// Calling the CreateNote function with invalid request body
-	response, err := service.CreateNote(requestBody, nil)
+	response := service.CreateNote(requestBody, nil)
 
 	// Asserting the response
-	assert.NotNil(t, err)
 	assert.Equal(t, 400, response.StatusCode)
 	assert.Contains(t, response.Body, "ID and Text fields are required")
 }
@@ -66,9 +64,8 @@ func TestCreateNoteEmptyBody(t *testing.T) {
 	service := notes_impl.DefaultNoteService{}
 
 	// Calling the CreateNote function with invalid request body
-	response, err := service.CreateNote("", nil)
+	response := service.CreateNote("", nil)
 
 	// Asserting the response
-	assert.NotNil(t, err)
 	assert.Equal(t, 400, response.StatusCode)
 }

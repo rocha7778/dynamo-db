@@ -6,5 +6,5 @@ import (
 
 // NoteService defines the interface for managing notes
 type DeleteNoteService interface {
-	DeleteNote(noteID string) (events.APIGatewayProxyResponse, error)
+	DeleteNote(noteID string) events.APIGatewayProxyResponse
 }

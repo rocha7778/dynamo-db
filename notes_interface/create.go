@@ -6,5 +6,5 @@ import (
 )
 
 type NoteService interface {
-	CreateNote(body string, createNoteRepository db.CreateNoteRepository) (events.APIGatewayProxyResponse, error)
+	CreateNote(body string, createNoteRepository db.CreateNoteRepository) events.APIGatewayProxyResponse
 }

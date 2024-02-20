@@ -2,8 +2,7 @@ package notes_impl
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
+	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/aws"
@@ -17,33 +16,25 @@ import (
 type DefaultNoteService struct{}
 type CreateNoteRepository struct{}
 
-func (DefaultNoteService) CreateNote(body string, createNoteService db.CreateNoteRepository) (events.APIGatewayProxyResponse, error) {
+func (DefaultNoteService) CreateNote(body string, createNoteService db.CreateNoteRepository) events.APIGatewayProxyResponse {
 	var note modelos.UserNote
-	err := json.Unmarshal([]byte(body), &note)
 
-	if err != nil {
-		errMsg := fmt.Sprintf("THE BODY %s, Error unmarshaling request body: %s", body, err.Error())
-		return events.APIGatewayProxyResponse{StatusCode: 400, Body: errMsg}, err
+	if err := json.Unmarshal([]byte(body), &note); err != nil {
+		errMsg := "Error al procesar el cuerpo de la solicitud"
+		return handleError(errMsg, 400)
 	}
 
 	if note.ID == "" || note.Text == "" {
-		return events.APIGatewayProxyResponse{StatusCode: 400, Body: "ID and Text fields are required"}, errors.New("ID and Text fields are required")
+		return handleError("ID and Text fields are required", http.StatusBadRequest)
+
 	}
 
-	// Marshal the note struct into JSON
-	noteJSON, err := json.Marshal(note)
-	if err != nil {
-		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error marshaling JSON"}, err
+	if err := createNoteService.PutItem(&note); err != nil {
+		return handleError("Error saving note to DynamoDB", http.StatusInternalServerError)
 	}
 
-	// Put the item into DynamoDB
-	err = createNoteService.PutItem(&note)
-
-	if err != nil {
-		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error saving note to DynamoDB"}, err
-	}
-
-	return events.APIGatewayProxyResponse{StatusCode: 200, Body: string(noteJSON)}, nil
+	noteJSON, _ := json.Marshal(note)
+	return events.APIGatewayProxyResponse{StatusCode: http.StatusOK, Body: string(noteJSON)}
 }
 
 func (*CreateNoteRepository) PutItem(note *modelos.UserNote) error {

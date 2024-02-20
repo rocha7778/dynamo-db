@@ -28,9 +28,8 @@ func TestUpdateNoteSuccess(t *testing.T) {
 
 	mockRepo.On("UpdateItem", &expectedNote).Return(nil)
 
-	response, err := noteService.UpdateNote("123", `{ "id": "123", "text":"Nota actualizada"}`)
+	response := noteService.UpdateNote("123", `{ "id": "123", "text":"Nota actualizada"}`)
 
-	assert.NoError(t, err)
 	assert.Equal(t, 200, response.StatusCode)
 	mockRepo.AssertExpectations(t)
 }
@@ -40,8 +39,7 @@ func TestUpdateNoteFailureIDMissing(t *testing.T) {
 	mockRepo := new(MockUpdateNoteRepo)
 	noteService := notes_impl.NoteService{Repo: mockRepo}
 
-	response, err := noteService.UpdateNote("", `{ "id": "123", "text":"Nota actualizada"}`)
-	assert.Error(t, err)
+	response := noteService.UpdateNote("", `{ "id": "123", "text":"Nota actualizada"}`)
 	assert.Equal(t, 400, response.StatusCode)
 	assert.Equal(t, "Note ID is required in path parameters", response.Body)
 	mockRepo.AssertExpectations(t)
@@ -52,8 +50,7 @@ func TestUpdateNoteFailureUnMarsharl(t *testing.T) {
 	mockRepo := new(MockUpdateNoteRepo)
 	noteService := notes_impl.NoteService{Repo: mockRepo}
 
-	response, err := noteService.UpdateNote("123", `{ "id": "123", "text":"Nota actualizada"`)
-	assert.Error(t, err)
+	response := noteService.UpdateNote("123", `{ "id": "123", "text":"Nota actualizada"`)
 	assert.Equal(t, 400, response.StatusCode)
 	assert.Equal(t, "Error unmarshaling request body: unexpected end of JSON input", response.Body)
 	mockRepo.AssertExpectations(t)
@@ -66,9 +63,8 @@ func TestUpdateNoteFailureDynamoDBOperation(t *testing.T) {
 	expectedNote := modelos.UserNote{ID: "123", Text: "Nota actualizada"}
 	mockRepo.On("UpdateItem", &expectedNote).Return(errors.New("error updating note in DynamoDB"))
 
-	response, err := noteService.UpdateNote("123", `{ "id": "123", "text":"Nota actualizada"}`)
+	response := noteService.UpdateNote("123", `{ "id": "123", "text":"Nota actualizada"}`)
 
-	assert.Error(t, err)
 	assert.Equal(t, 500, response.StatusCode)
 	assert.Equal(t, "Error updating note in DynamoDB", response.Body)
 	mockRepo.AssertExpectations(t)

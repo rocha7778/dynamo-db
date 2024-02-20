@@ -29,9 +29,8 @@ func TestDeleteNoteSuccess(t *testing.T) {
 		Repo: mockRepo,
 	}
 
-	resp, err := service.DeleteNote(noteID)
+	resp := service.DeleteNote(noteID)
 
-	assert.Nil(t, err)
 	assert.Equal(t, 204, resp.StatusCode)
 	assert.Equal(t, "Note deleted successfully", resp.Body)
 	mockRepo.AssertExpectations(t)
@@ -41,9 +40,8 @@ func TestDeleteNoteSuccess(t *testing.T) {
 func TestDeleteNoteEmptyNoteID(t *testing.T) {
 	service := notes_impl.DefaultNoteDeleteService{}
 
-	resp, err := service.DeleteNote("")
+	resp := service.DeleteNote("")
 
-	assert.NotNil(t, err)
 	assert.Equal(t, 400, resp.StatusCode)
 	assert.Equal(t, "Note ID is required in path parameters", resp.Body)
 }
@@ -58,9 +56,8 @@ func TestDeleteNoteDeleteItemError(t *testing.T) {
 		Repo: mockRepo,
 	}
 
-	resp, err := service.DeleteNote(noteID)
+	resp := service.DeleteNote(noteID)
 
-	assert.NotNil(t, err)
 	assert.Equal(t, 500, resp.StatusCode)
 	assert.Equal(t, "Error deleting note from DynamoDB", resp.Body)
 	mockRepo.AssertExpectations(t)

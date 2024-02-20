@@ -1,7 +1,6 @@
 package notes_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/rocha7778/dynamo-db/modelos"
@@ -25,9 +24,7 @@ func TestCreateNoteSuccesstb(t *testing.T) {
 	mockRepo.On("PutItem", mock.Anything).Return(nil)
 
 	body := `{"id":"1", "text":"test note"}`
-	response, err := service.CreateNote(body, mockRepo)
-	fmt.Printf("El error %v", err)
-	assert.Nil(t, err)
+	response := service.CreateNote(body, mockRepo)
 	assert.Equal(t, 200, response.StatusCode)
 	mockRepo.AssertExpectations(t)
 }
@@ -37,9 +34,8 @@ func TestCreateNoteFailureUnmarshal(t *testing.T) {
 	mockRepo := new(MockCreateNoteService)
 
 	body := `{"id":1, "text":}`
-	response, err := service.CreateNote(body, mockRepo)
+	response := service.CreateNote(body, mockRepo)
 
-	assert.NotNil(t, err)
 	assert.Equal(t, 400, response.StatusCode)
 }
 
@@ -48,8 +44,7 @@ func TestCreateNoteFailureMissingFields(t *testing.T) {
 	mockRepo := new(MockCreateNoteService)
 
 	body := `{"id":"", "text":""}`
-	response, err := service.CreateNote(body, mockRepo)
+	response := service.CreateNote(body, mockRepo)
 
-	assert.NotNil(t, err)
 	assert.Equal(t, 400, response.StatusCode)
 }

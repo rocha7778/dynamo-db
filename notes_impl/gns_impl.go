@@ -2,7 +2,7 @@ package notes_impl
 
 import (
 	"encoding/json"
-	"errors"
+	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/aws"
@@ -19,36 +19,36 @@ type DefaultGetNotesCreateService struct {
 
 type GetNotesServiceRepository struct{}
 
-func (NoteService DefaultGetNotesCreateService) GetNotes() (events.APIGatewayProxyResponse, error) {
+func (NoteService DefaultGetNotesCreateService) GetNotes() events.APIGatewayProxyResponse {
 
 	// Get the item from DynamoDB
 	result, err := NoteService.Repo.Scam()
 
 	// Check for errors
 	if err != nil {
-		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error scanning DynamoDB table"}, errors.New("error scanning DynamoDB table")
+		return handleError("Error scanning DynamoDB table", http.StatusInternalServerError)
 	}
 
 	// Check if any users were found
 	if len(result.Items) == 0 {
-		return events.APIGatewayProxyResponse{StatusCode: 404, Body: "Users not found"}, errors.New("user not found")
+		return handleError("Notes not found", http.StatusOK)
 	}
 
 	// Unmarshal the items into a slice of user structs
 	var users []modelos.UserNote
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &users)
 	if err != nil {
-		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error unmarshaling users from DynamoDB"}, errors.New("error unmarshaling users from DynamoDB")
+		return handleError("Error unmarshaling users from DynamoDB", http.StatusInternalServerError)
 	}
 
 	// Marshal the users slice into JSON
 	usersJSON, err := json.Marshal(users)
 	if err != nil {
-		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error marshaling users to JSON"}, errors.New("error marshaling users to JSON")
+		return handleError("Error marshaling notes to JSON", http.StatusInternalServerError)
 	}
 
 	// Return the users as a response
-	return events.APIGatewayProxyResponse{StatusCode: 200, Body: string(usersJSON)}, nil
+	return events.APIGatewayProxyResponse{StatusCode: http.StatusOK, Body: string(usersJSON)}
 
 }
 

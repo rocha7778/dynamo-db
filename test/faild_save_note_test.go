@@ -29,8 +29,7 @@ func TestCreateNoteErrorSavingToDynamoDB(t *testing.T) {
 	}
 	noteJSON, _ := json.Marshal(note)
 	mockRepository.On("PutItem", &note).Return(errors.New("error saving to DynamoDB"))
-	response, err := service.CreateNote(string(noteJSON), mockRepository)
-	assert.NotNil(t, err)
+	response := service.CreateNote(string(noteJSON), mockRepository)
 	assert.Equal(t, 500, response.StatusCode)
 	assert.Contains(t, response.Body, "Error saving note to DynamoDB")
 	mockRepository.AssertCalled(t, "PutItem", &note)

@@ -8,7 +8,7 @@ import (
 	"github.com/rocha7778/dynamo-db/handlers"
 )
 
-func createNoteHandler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func createNoteHandler(ctx context.Context, request events.APIGatewayProxyRequest) events.APIGatewayProxyResponse {
 
 	switch request.HTTPMethod {
 	case "GET":

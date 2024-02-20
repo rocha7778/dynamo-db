@@ -5,5 +5,5 @@ import (
 )
 
 type UodateNoteService interface {
-	UpdateNote(noteID string, body string) (events.APIGatewayProxyResponse, error)
+	UpdateNote(noteID string, body string) events.APIGatewayProxyResponse
 }

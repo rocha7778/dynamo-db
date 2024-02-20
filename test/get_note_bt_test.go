@@ -41,10 +41,9 @@ func TestGetNoteById(t *testing.T) {
 	mockRepo.On("GetItem", "someNoteID").Return(expectedResult, nil)
 
 	// Llamar a la función bajo prueba
-	resp, err := service.GetNoteById("someNoteID")
+	resp := service.GetNoteById("someNoteID")
 
 	// Aserciones para verificar el comportamiento esperado
-	assert.Nil(t, err)
 	assert.Equal(t, 200, resp.StatusCode)
 	// Verificar que el mock fue llamado como se esperaba
 	mockRepo.AssertExpectations(t)
@@ -57,10 +56,7 @@ func TestGetNoteByIdWithError(t *testing.T) {
 	mockRepo.On("GetItem", "someNoteID").Return((*dynamodb.GetItemOutput)(nil), errors.New("error"))
 
 	// Llamando a la función bajo prueba
-	resp, err := service.GetNoteById("someNoteID")
-
-	// Verificando que se recibió un error
-	assert.Nil(t, err)
+	resp := service.GetNoteById("someNoteID")
 
 	// Dado que hay un error, se puede verificar también el estado esperado de la respuesta
 	// Esto asume que tu implementación de GetNoteById devuelve una respuesta con un código de estado específico incluso en caso de error
