@@ -12,7 +12,11 @@ import (
 	"github.com/rocha7778/dynamo-db/variables"
 )
 
-type DefaultNoteGetService struct{}
+type DefaultNoteGetService struct {
+	Repo db.GetNoteRepository
+}
+
+type GetNoteServiceRepository struct{}
 
 func (s DefaultNoteGetService) GetNoteById(noteID string) (events.APIGatewayProxyResponse, error) {
 
@@ -22,12 +26,7 @@ func (s DefaultNoteGetService) GetNoteById(noteID string) (events.APIGatewayProx
 	}
 
 	// Get the item from DynamoDB
-	result, err := db.DBClient().GetItem(&dynamodb.GetItemInput{
-		TableName: aws.String(variables.TableName),
-		Key: map[string]*dynamodb.AttributeValue{
-			"id": {S: aws.String(noteID)},
-		},
-	})
+	result, err := s.Repo.GetItem(noteID)
 
 	// Check for errors
 	if err != nil {
@@ -55,4 +54,15 @@ func (s DefaultNoteGetService) GetNoteById(noteID string) (events.APIGatewayProx
 	// Return the note as a response
 	return events.APIGatewayProxyResponse{StatusCode: 200, Body: string(noteJSON)}, nil
 
+}
+
+func (s *GetNoteServiceRepository) GetItem(noteID string) (*dynamodb.GetItemOutput, error) {
+	result, err := db.DBClient().GetItem(&dynamodb.GetItemInput{
+		TableName: aws.String(variables.TableName),
+		Key: map[string]*dynamodb.AttributeValue{
+			"id": {S: aws.String(noteID)},
+		},
+	})
+
+	return result, err
 }
