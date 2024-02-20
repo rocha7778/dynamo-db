@@ -3,27 +3,43 @@ package handlers
 import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/rocha7778/dynamo-db/notes"
+	"github.com/rocha7778/dynamo-db/notes_impl"
 )
+
+var repo = &notes_impl.GetNotesServiceRepository{}
+var service = notes_impl.DefaultGetNotesCreateService{
+	Repo: repo,
+}
+
+var repoById = &notes_impl.GetNoteServiceRepository{}
+var serviceById = notes_impl.DefaultNoteGetService{
+	Repo: repoById,
+}
 
 func CreateNote(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	body := request.Body
-	return notes.CreateNote(body)
+	service := notes_impl.DefaultNoteService{}
+	createNoteService := &notes_impl.CreateNoteRepository{}
+	return service.CreateNote(body, createNoteService)
 }
 
 func GetNote(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
 	noteID := request.PathParameters["id"]
-
 	if request.Path == "/notes" {
-		return notes.GetNotes()
+		return service.GetNotes()
 	} else {
-		return notes.GetNoteById(noteID)
+		return serviceById.GetNoteById(noteID)
 	}
 }
 
 func DeleteNote(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	noteID := request.PathParameters["id"]
-	return notes.DeleteNote(noteID)
+	var repo = &notes_impl.DeleteServiceRepository{}
+	var service = notes_impl.DefaultNoteDeleteService{
+		Repo: repo,
+	}
+	return service.DeleteNote(noteID)
 }
 func UpdateNote(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	noteID := request.PathParameters["id"]
