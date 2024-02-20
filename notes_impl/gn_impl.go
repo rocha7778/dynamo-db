@@ -18,7 +18,7 @@ type DefaultNoteGetService struct {
 
 type GetNoteServiceRepository struct{}
 
-func (s DefaultNoteGetService) GetNoteById(noteID string) (events.APIGatewayProxyResponse, error) {
+func (NoteService DefaultNoteGetService) GetNoteById(noteID string) (events.APIGatewayProxyResponse, error) {
 
 	// Check if the note ID is empty
 	if noteID == "" {
@@ -26,7 +26,7 @@ func (s DefaultNoteGetService) GetNoteById(noteID string) (events.APIGatewayProx
 	}
 
 	// Get the item from DynamoDB
-	result, err := s.Repo.GetItem(noteID)
+	result, err := NoteService.Repo.GetItem(noteID)
 
 	// Check for errors
 	if err != nil {
@@ -56,7 +56,7 @@ func (s DefaultNoteGetService) GetNoteById(noteID string) (events.APIGatewayProx
 
 }
 
-func (s *GetNoteServiceRepository) GetItem(noteID string) (*dynamodb.GetItemOutput, error) {
+func (*GetNoteServiceRepository) GetItem(noteID string) (*dynamodb.GetItemOutput, error) {
 	result, err := db.DBClient().GetItem(&dynamodb.GetItemInput{
 		TableName: aws.String(variables.TableName),
 		Key: map[string]*dynamodb.AttributeValue{

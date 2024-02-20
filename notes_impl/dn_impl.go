@@ -16,11 +16,11 @@ type DefaultNoteDeleteService struct {
 type DeleteServiceRepository struct{}
 
 // DeleteNote deletes a note
-func (s *DefaultNoteDeleteService) DeleteNote(noteID string) (events.APIGatewayProxyResponse, error) {
+func (NoteService *DefaultNoteDeleteService) DeleteNote(noteID string) (events.APIGatewayProxyResponse, error) {
 	if noteID == "" {
 		return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Note ID is required in path parameters"}, errors.New("Note ID is required in path parameters")
 	}
-	err := s.Repo.DeleteItem(noteID)
+	err := NoteService.Repo.DeleteItem(noteID)
 
 	if err != nil {
 		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error deleting note from DynamoDB"}, err
@@ -29,7 +29,7 @@ func (s *DefaultNoteDeleteService) DeleteNote(noteID string) (events.APIGatewayP
 	return events.APIGatewayProxyResponse{StatusCode: 204, Body: "Note deleted successfully"}, nil
 }
 
-func (deleteService *DeleteServiceRepository) DeleteItem(noteId string) error {
+func (*DeleteServiceRepository) DeleteItem(noteId string) error {
 
 	// Delete the item from DynamoDB
 	_, err := db.DBClient().DeleteItem(&dynamodb.DeleteItemInput{

@@ -19,7 +19,7 @@ type NoteService struct {
 	Repo db.UpdateNoteRepository
 }
 
-func (s *NoteService) UpdateNote(noteID string, body string) (events.APIGatewayProxyResponse, error) {
+func (NoteService *NoteService) UpdateNote(noteID string, body string) (events.APIGatewayProxyResponse, error) {
 	// Extract note ID from request path parameters
 	if noteID == "" {
 		return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Note ID is required in path parameters"}, errors.New("Note ID is required in path parameters")
@@ -34,7 +34,7 @@ func (s *NoteService) UpdateNote(noteID string, body string) (events.APIGatewayP
 	}
 
 	// Update the item in DynamoDB
-	err = s.Repo.UpdateItem(&updatedNote)
+	err = NoteService.Repo.UpdateItem(&updatedNote)
 	if err != nil {
 		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error updating note in DynamoDB"}, errors.New("error updating note in DynamoDB")
 	}
@@ -44,7 +44,7 @@ func (s *NoteService) UpdateNote(noteID string, body string) (events.APIGatewayP
 	return events.APIGatewayProxyResponse{StatusCode: 200, Body: string(responseBody)}, nil
 }
 
-func (s *UpdateNoteServiceRepository) UpdateItem(note *modelos.UserNote) error {
+func (*UpdateNoteServiceRepository) UpdateItem(note *modelos.UserNote) error {
 
 	_, err := db.DBClient().UpdateItem(&dynamodb.UpdateItemInput{
 		TableName: aws.String(variables.TableName),

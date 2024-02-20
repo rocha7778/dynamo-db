@@ -19,10 +19,10 @@ type DefaultGetNotesCreateService struct {
 
 type GetNotesServiceRepository struct{}
 
-func (s DefaultGetNotesCreateService) GetNotes() (events.APIGatewayProxyResponse, error) {
+func (NoteService DefaultGetNotesCreateService) GetNotes() (events.APIGatewayProxyResponse, error) {
 
 	// Get the item from DynamoDB
-	result, err := s.Repo.Scam()
+	result, err := NoteService.Repo.Scam()
 
 	// Check for errors
 	if err != nil {
@@ -52,7 +52,7 @@ func (s DefaultGetNotesCreateService) GetNotes() (events.APIGatewayProxyResponse
 
 }
 
-func (s *GetNotesServiceRepository) Scam() (*dynamodb.ScanOutput, error) {
+func (*GetNotesServiceRepository) Scam() (*dynamodb.ScanOutput, error) {
 
 	result, err := db.DBClient().Scan(&dynamodb.ScanInput{
 		TableName: aws.String(variables.TableName),

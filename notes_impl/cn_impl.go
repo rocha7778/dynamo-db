@@ -17,7 +17,7 @@ import (
 type DefaultNoteService struct{}
 type CreateNoteRepository struct{}
 
-func (s DefaultNoteService) CreateNote(body string, createNoteService db.CreateNoteRepository) (events.APIGatewayProxyResponse, error) {
+func (DefaultNoteService) CreateNote(body string, createNoteService db.CreateNoteRepository) (events.APIGatewayProxyResponse, error) {
 	var note modelos.UserNote
 	err := json.Unmarshal([]byte(body), &note)
 
@@ -46,7 +46,7 @@ func (s DefaultNoteService) CreateNote(body string, createNoteService db.CreateN
 	return events.APIGatewayProxyResponse{StatusCode: 200, Body: string(noteJSON)}, nil
 }
 
-func (createNoteService CreateNoteRepository) PutItem(note *modelos.UserNote) error {
+func (*CreateNoteRepository) PutItem(note *modelos.UserNote) error {
 	// Put the item into DynamoDB
 	_, err := db.DBClient().PutItem(&dynamodb.PutItemInput{
 		TableName: aws.String(variables.TableName),
