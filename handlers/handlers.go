@@ -5,54 +5,64 @@ import (
 	"github.com/rocha7778/dynamo-db/notes_impl"
 )
 
-var (
-	createNoteServiceRepo = &notes_impl.CreateNoteRepository{}
-	getNotesServiceRepo   = &notes_impl.GetNotesServiceRepository{}
-	getNoteServiceRepo    = &notes_impl.GetNoteServiceRepository{}
-	deleteServiceRepo     = &notes_impl.DeleteServiceRepository{}
-	updateServiceRepo     = &notes_impl.UpdateNoteServiceRepository{}
-)
-
-var (
-	noteService        = notes_impl.CreateNoteService{Repo: createNoteServiceRepo}
-	getNoteService     = notes_impl.GetNotesCreateService{Repo: getNotesServiceRepo}
-	deleteNoteService  = notes_impl.DeleteNoteService{Repo: deleteServiceRepo}
-	updateNoteService  = notes_impl.UpdateNoteService{Repo: updateServiceRepo}
-	getNoteByIdService = notes_impl.GetNoteServiceById{Repo: getNoteServiceRepo}
-)
-
-func CreateNote(request events.APIGatewayProxyRequest) events.APIGatewayProxyResponse {
-	body := request.Body
-	return noteService.CreateNote(body)
+type NoteHandler struct {
+	CreateNoteService  notes_impl.CreateNoteService
+	GetNotesService    notes_impl.GetNotesCreateService
+	DeleteNoteService  notes_impl.DeleteNoteService
+	UpdateNoteService  notes_impl.UpdateNoteService
+	GetNoteByIdService notes_impl.GetNoteServiceById
 }
 
-func GetNote(request events.APIGatewayProxyRequest) events.APIGatewayProxyResponse {
+func NewNoteHandler() *NoteHandler {
+	// Inicialización de repositorios
+	createNoteRepo := &notes_impl.CreateNoteRepository{}
+	getNotesRepo := &notes_impl.GetNotesServiceRepository{}
+	getNoteRepo := &notes_impl.GetNoteServiceRepository{}
+	deleteRepo := &notes_impl.DeleteServiceRepository{}
+	updateRepo := &notes_impl.UpdateNoteServiceRepository{}
+
+	// Inicialización de servicios con inyección de dependencias
+	return &NoteHandler{
+		CreateNoteService:  notes_impl.CreateNoteService{Repo: createNoteRepo},
+		GetNotesService:    notes_impl.GetNotesCreateService{Repo: getNotesRepo},
+		DeleteNoteService:  notes_impl.DeleteNoteService{Repo: deleteRepo},
+		UpdateNoteService:  notes_impl.UpdateNoteService{Repo: updateRepo},
+		GetNoteByIdService: notes_impl.GetNoteServiceById{Repo: getNoteRepo},
+	}
+}
+
+func (h *NoteHandler) CreateNote(request events.APIGatewayProxyRequest) events.APIGatewayProxyResponse {
+	body := request.Body
+	return h.CreateNoteService.CreateNote(body)
+}
+
+func (h *NoteHandler) GetNote(request events.APIGatewayProxyRequest) events.APIGatewayProxyResponse {
 	noteID := request.PathParameters["id"]
 	if request.Path == "/notes" {
-		return getNotes()
+		return getNotes(h)
 	}
-	return getNoteById(noteID)
+	return getNoteById(h, noteID)
 
 }
 
-func getNotes() events.APIGatewayProxyResponse {
-	return getNoteService.GetNotes()
+func getNotes(h *NoteHandler) events.APIGatewayProxyResponse {
+	return h.GetNotesService.GetNotes()
 }
 
-func getNoteById(noteID string) events.APIGatewayProxyResponse {
-	return getNoteByIdService.GetNoteById(noteID)
+func getNoteById(h *NoteHandler, noteID string) events.APIGatewayProxyResponse {
+	return h.GetNoteByIdService.GetNoteById(noteID)
 }
 
-func DeleteNote(request events.APIGatewayProxyRequest) events.APIGatewayProxyResponse {
+func (h *NoteHandler) DeleteNote(request events.APIGatewayProxyRequest) events.APIGatewayProxyResponse {
 	noteID := request.PathParameters["id"]
-	return deleteNoteService.DeleteNote(noteID)
+	return h.DeleteNoteService.DeleteNote(noteID)
 }
-func UpdateNote(request events.APIGatewayProxyRequest) events.APIGatewayProxyResponse {
+func (h *NoteHandler) UpdateNote(request events.APIGatewayProxyRequest) events.APIGatewayProxyResponse {
 	noteID := request.PathParameters["id"]
 	body := request.Body
-	return updateNoteService.UpdateNote(noteID, body)
+	return h.UpdateNoteService.UpdateNote(noteID, body)
 }
 
-func UnhandledMethod() events.APIGatewayProxyResponse {
+func (h *NoteHandler) UnhandledMethod() events.APIGatewayProxyResponse {
 	return events.APIGatewayProxyResponse{StatusCode: 405, Body: "Unsupported method"}
 }
