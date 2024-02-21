@@ -20,7 +20,7 @@ type GetNoteServiceById struct {
 
 type GetNoteServiceRepository struct{}
 
-func (NoteService GetNoteServiceById) GetNoteById(noteID string) events.APIGatewayProxyResponse {
+func (NoteService *GetNoteServiceById) GetNoteById(noteID string) events.APIGatewayProxyResponse {
 
 	// Check if the note ID is empty
 

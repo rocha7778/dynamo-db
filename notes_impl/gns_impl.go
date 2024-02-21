@@ -19,7 +19,7 @@ type GetNotesCreateService struct {
 
 type GetNotesServiceRepository struct{}
 
-func (NoteService GetNotesCreateService) GetNotes() events.APIGatewayProxyResponse {
+func (NoteService *GetNotesCreateService) GetNotes() events.APIGatewayProxyResponse {
 
 	// Get the item from DynamoDB
 	result, err := NoteService.Repo.Scam()
