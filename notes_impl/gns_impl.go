@@ -5,19 +5,14 @@ import (
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/rocha7778/dynamo-db/db"
 	"github.com/rocha7778/dynamo-db/modelos"
-	"github.com/rocha7778/dynamo-db/variables"
 )
 
 type GetNotesCreateService struct {
 	Repo db.GetNotesRepository
 }
-
-type GetNotesServiceRepository struct{}
 
 func (NoteService *GetNotesCreateService) GetNotes() events.APIGatewayProxyResponse {
 
@@ -50,12 +45,4 @@ func (NoteService *GetNotesCreateService) GetNotes() events.APIGatewayProxyRespo
 	// Return the users as a response
 	return events.APIGatewayProxyResponse{StatusCode: http.StatusOK, Body: string(usersJSON)}
 
-}
-
-func (*GetNotesServiceRepository) Scam() (*dynamodb.ScanOutput, error) {
-
-	result, err := db.DBClient().Scan(&dynamodb.ScanInput{
-		TableName: aws.String(variables.TableName),
-	})
-	return result, err
 }

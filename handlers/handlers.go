@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/rocha7778/dynamo-db/notes_impl"
+	"github.com/rocha7778/dynamo-db/repository"
 )
 
 type NoteHandler struct {
@@ -15,11 +16,11 @@ type NoteHandler struct {
 
 func NewNoteHandler() *NoteHandler {
 	// Inicialización de repositorios
-	createNoteRepo := &notes_impl.CreateNoteRepository{}
-	getNotesRepo := &notes_impl.GetNotesServiceRepository{}
-	getNoteRepo := &notes_impl.GetNoteServiceRepository{}
-	deleteRepo := &notes_impl.DeleteServiceRepository{}
-	updateRepo := &notes_impl.UpdateNoteServiceRepository{}
+	createNoteRepo := &repository.CreateNoteRepository{}
+	getNotesRepo := &repository.GetNotesServiceRepository{}
+	getNoteRepo := &repository.GetNoteServiceRepository{}
+	deleteRepo := &repository.DeleteServiceRepository{}
+	updateRepo := &repository.UpdateNoteServiceRepository{}
 
 	// Inicialización de servicios con inyección de dependencias
 	return &NoteHandler{

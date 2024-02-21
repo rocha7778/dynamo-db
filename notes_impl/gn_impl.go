@@ -5,20 +5,15 @@ import (
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/rocha7778/dynamo-db/db"
 	"github.com/rocha7778/dynamo-db/modelos"
 	"github.com/rocha7778/dynamo-db/validations"
-	"github.com/rocha7778/dynamo-db/variables"
 )
 
 type GetNoteServiceById struct {
 	Repo db.GetNoteRepository
 }
-
-type GetNoteServiceRepository struct{}
 
 func (NoteService *GetNoteServiceById) GetNoteById(noteID string) events.APIGatewayProxyResponse {
 
@@ -57,15 +52,4 @@ func (NoteService *GetNoteServiceById) GetNoteById(noteID string) events.APIGate
 	// Return the note as a response
 	return events.APIGatewayProxyResponse{StatusCode: http.StatusOK, Body: string(noteJSON)}
 
-}
-
-func (*GetNoteServiceRepository) GetItem(noteID string) (*dynamodb.GetItemOutput, error) {
-	result, err := db.DBClient().GetItem(&dynamodb.GetItemInput{
-		TableName: aws.String(variables.TableName),
-		Key: map[string]*dynamodb.AttributeValue{
-			"id": {S: aws.String(noteID)},
-		},
-	})
-
-	return result, err
 }
