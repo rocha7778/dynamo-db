@@ -20,8 +20,8 @@ func (m *mockCreateNoteRepository) PutItem(note *modelos.UserNote) error {
 	return args.Error(0)
 }
 
-func setupService() (*notes_impl.CreateNoteService, *MockCreateNoteService) {
-	mockRepo := new(MockCreateNoteService)
+func setupService() (*notes_impl.CreateNoteService, *mockCreateNoteRepository) {
+	mockRepo := new(mockCreateNoteRepository)
 	service := &notes_impl.CreateNoteService{
 		Repo: mockRepo, // Inyectar el mock aquí
 	}

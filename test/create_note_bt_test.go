@@ -9,17 +9,17 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type MockCreateNoteService struct {
+type MockCreateNoteRepository struct {
 	mock.Mock
 }
 
-func (m *MockCreateNoteService) PutItem(note *modelos.UserNote) error {
+func (m *MockCreateNoteRepository) PutItem(note *modelos.UserNote) error {
 	args := m.Called(note)
 	return args.Error(0)
 }
 
-func setup() (*notes_impl.CreateNoteService, *MockCreateNoteService) {
-	mockRepo := new(MockCreateNoteService)
+func setup() (*notes_impl.CreateNoteService, *MockCreateNoteRepository) {
+	mockRepo := new(MockCreateNoteRepository)
 	service := &notes_impl.CreateNoteService{
 		Repo: mockRepo, // Inyectar el mock aquí
 	}
